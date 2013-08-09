@@ -45,25 +45,28 @@ public class Enviador extends AsyncTask<String, Void, Void>{
         	}else{
         		System.out.println("Invalid Event Name");
         	}
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-        // Making HTTP Request
-        try {
             HttpResponse response = httpClient.execute(httpPost);
-            System.out.println(response);
-            // writing response to log
             Log.d("Http Response:", response.toString());
+        
+	        // Let's also send the location alone, otherwise DCA does not update location for the device
+	        if(arg0[0].equals("caidaGPS") || arg0[0].equals("asistenciaGPS")) {
+	        	httpPost.setEntity(new StringEntity("|||8:27||gps|"+arg0[1]+"|"+arg0[2]));
+	            response = httpClient.execute(httpPost);
+	            Log.d("Http Response:", response.toString());
+	    	} else {
+	    		Log.d("Enviador", "No need to send location");
+	    	}
         } catch (ClientProtocolException e) {
             // writing exception to log
             e.printStackTrace();
-        } catch (IOException e) {
-            // writing exception to log
-            e.printStackTrace();
- 
-        }
+		} catch (UnsupportedEncodingException e1) {
+			Log.e("Enviador", "Some encoding exception", e1);
+	    } catch (IOException e) {
+	        // writing exception to log
+	        e.printStackTrace();
+	    }
+
 		return null;
 	}
 	protected void onPostExecute() {
